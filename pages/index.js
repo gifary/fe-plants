@@ -77,7 +77,7 @@ export default function Home() {
                            text-sm
                            text-black
                            ">
-                  <img src={`${process.env.NEXT_PUBLIC_BASE_URL}/storage/${item.image}`} width={100}/>
+                  {item.image ? <img src={`${process.env.NEXT_PUBLIC_BASE_URL}/storage/${item.image}`} width={100}/> : null}
                 </td>
               </tr>
             )

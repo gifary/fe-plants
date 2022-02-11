@@ -1,13 +1,18 @@
 import axios from 'axios'
 import {useState} from 'react'
 import {useRouter} from "next/router";
+import dynamic from "next/dynamic";
+
+const ReactRTE = dynamic(() => import("../components/Editor"), {
+  ssr: false,
+});
 
 export default function Create() {
-  const [formStatus, setFormStatus] = useState(false);
+  const [wateringInstructions, setWateringInstructions] = useState()
+
   const [query, setQuery] = useState({
     name: "",
     species: "",
-    watering_instructions: "",
     image: ""
   });
   const router = useRouter()
@@ -34,6 +39,7 @@ export default function Create() {
     Object.entries(query).forEach(([key, value]) => {
       formData.append(key, value);
     });
+    formData.append("watering_instructions", wateringInstructions.toString("html"))
     axios
       .post(
         `${process.env.NEXT_PUBLIC_API_URL}/plants`,
@@ -41,7 +47,6 @@ export default function Create() {
         {headers: {Accept: "application/json"}}
       )
       .then(function (response) {
-        setFormStatus(true);
         setQuery({
           name: "",
           species: "",
@@ -67,7 +72,9 @@ export default function Create() {
           <label className="block">Species</label>
           <input type="text" name={"species"} value={query.species} onChange={handleChange()} className="form-input block w-full" required={true}/>
           <label className="block">Watering Instructions</label>
-          <textarea className="form-input block w-full" rows={5} name="watering_instructions" value={query.watering_instructions} onChange={handleChange()} />
+          <ReactRTE
+            callBack={setWateringInstructions}
+          />
           <label className="block">Image</label>
           <input type="file" name={"image"} className="form-input block w-full" accept="image/*" onChange={handleFileChange()}/>
 
